@@ -13,7 +13,7 @@ function Chart({month}) {
    useEffect(() => {
     const rangeMonth = async () => {
       try {
-        const res = await axios.get(`http://localhost:4500/range?month=${month}`);
+        const res = await axios.get(`https://data-visualization-pied.vercel.app/range?month=${month}`);
         console.log(res, ' this is response');
         console.log(res.data);
         if (res.data.result === true) {

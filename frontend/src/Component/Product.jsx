@@ -16,7 +16,7 @@ function Product() {
           const fetchProducts = async()=>{
       
              try {
-                const response = await axios.get(`http://localhost:4500/all_products?search=${searchParameter}&page=${page}`)
+                const response = await axios.get(`https://data-visualization-pied.vercel.app/all_products?search=${searchParameter}&page=${page}`)
                   console.log(response)
                   console.log(response.data)
                   if(response.data.result === true){
@@ -35,7 +35,7 @@ function Product() {
       const selectedMonthYear = async()=>{
   
          try {
-            const res = await axios.get(`http://localhost:4500/statistics?month=${selectedMonth}`)
+            const res = await axios.get(`https://data-visualization-pied.vercel.app/statistics?month=${selectedMonth}`)
               console.log(res)
               console.log("slfjasdflkjda;lfskj")
               console.log(res.data)
