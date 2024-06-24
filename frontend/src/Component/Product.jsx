@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import Stats from "./Stats";
+import Chart from "./Chart";
+
+
 
 function Product() {
     const [data, setData] = useState([])
-    const [selectedMonth, setSelectedMonth] = useState('');
+    const [saleData, setSaleData] = useState({})
+    const [selectedMonth, setSelectedMonth] = useState('03');
     const [searchParameter, setSearchParameter] = useState('')
     const [page, setPage] = useState(1)
 
@@ -26,8 +31,33 @@ function Product() {
     },[searchParameter,page])
 
 
+    useEffect(()=>{
+      const selectedMonthYear = async()=>{
+  
+         try {
+            const res = await axios.get(`http://localhost:4500/statistics?month=${selectedMonth}`)
+              console.log(res)
+              console.log("slfjasdflkjda;lfskj")
+              console.log(res.data)
+              if(res.data.result === true){
+                setSaleData(res.data.data)
+              }
+        } catch (error) {
+            console.log(error)
+         }
+           
+      }
+      selectedMonthYear()
+},[selectedMonth])
+
+
+
+
     const handleSelectedMonth = async(event)=>{
-           setSelectedMonth(event.target.value)
+      console.log(event.target.value, "value")
+      const month = event.target.value.split("-")
+      console.log(month, 'month',month[1])
+           setSelectedMonth(month[1])
     }
 
     const handleNext = ()=>{
@@ -41,6 +71,9 @@ function Product() {
             setPage(page-1);
         }
     }
+
+
+ 
 
   return (
     <div>
@@ -111,6 +144,13 @@ function Product() {
 
         </div>
      
+       <Stats 
+       saleData ={saleData}
+       />
+       <Chart
+       month={selectedMonth}
+       />
+    
     </div>
   )
 }

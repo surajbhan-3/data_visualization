@@ -43,44 +43,92 @@ console.log(search, 'sfasdfas')
 
 
 app.get('/statistics', async(req,res)=>{
-    const { month, year } = req.query; //* The default values assigned in case of 
+    const {month} = req.query; //* The default values assigned in case of 
  
-    const startDate = new Date(Date.UTC(year, month-1, 1))
-    const endDate = new Date(Date.UTC(year, month,1) )
-    
+    const monthToInt = parseInt(month);
 
-console.log(startDate, endDate, 'sdfkkasdfj')
-
-    
      try {
+
       const totalSales = await ProductModel.aggregate([
-        { $match:{sold:"true", dateOfSale:{$gte:startDate,$lt:endDate}}},
-        {    $group:{  _id:null, totalAmount: {$sum:'$price'}  }  }
+        { $match:{sold:"true",  $expr: {
+            $eq: [{ $month: "$dateOfSale" }, monthToInt]
+        }  }},
+        { $group:{  _id:null, totalAmount: {$sum:'$price'}  }  }
+     
     ])
-      console.log(totalSales, 'sfsdfsd')
+    const totalAmount = totalSales[0].totalAmount
 
-      const totalSoldItems = await ProductModel.findOne({
-        sold:"true"
+      const totalSoldItems = await ProductModel.countDocuments({
+        sold:"true",
+        $expr: {
+            $eq: [{ $month: "$dateOfSale" }, monthToInt]
+        }
       }) 
-      console.log(totalSoldItems, 'totalsold imtes')
+   
 
-
-      const totalNotSoldItems = await ProductModel.find({
+      const totalNotSoldItems = await ProductModel.countDocuments(
+        {
         sold:"false",
-        dateOfSale:{$gte:startDate,$lt:endDate}
-
-      }) 
+        $expr: {
+            $eq: [{ $month: "$dateOfSale" }, monthToInt]
+        }
+    }) 
       
-      console.log(totalNotSoldItems, 'totalsalses')
-
-
-    //   return res.status(200).send({data:totalSales, message:"successfull", result:true})
+   return res.status(200).send({data:{totalAmount,totalSoldItems, totalNotSoldItems}, message:"successfull", result:true})
      } catch (error) {
-        console.log(error)
        return res.status(500).send({"message":'Internal server error', error:error.message, result:false})
      }
 })
 
+
+
+
+app.get('/range', async(req,res)=>{
+    const {month} = req.query; //* The default values assigned in case of 
+ 
+    const monthToInt = parseInt(month);
+
+    
+     try {
+
+      const range = await ProductModel.aggregate([
+        {
+            $match: {
+                $expr: { $eq: [{ $month: '$dateOfSale' }, monthToInt] }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    $switch: {
+                        branches: [
+                            { case: { $lte: ['$price', 100] }, then: '0-100' },
+                            { case: { $lte: ['$price', 200] }, then: '101-200' },
+                            { case: { $lte: ['$price', 300] }, then: '201-300' },
+                            { case: { $lte: ['$price', 400] }, then: '301-400' },
+                            { case: { $lte: ['$price', 500] }, then: '401-500' },
+                            { case: { $lte: ['$price', 600] }, then: '501-600' },
+                            { case: { $lte: ['$price', 700] }, then: '601-700' },
+                            { case: { $lte: ['$price', 800] }, then: '701-800' },
+                            { case: { $lte: ['$price', 900] }, then: '801-900' },
+                            { case: { $gte: ['$price', 901] }, then: '901-above' }
+                        ]
+                    }
+                },
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+
+console.log(range, 'rangedata')
+   
+      
+   return res.status(200).send({data:range, message:"successfull", flag:"ok", result:true})
+     } catch (error) {
+       return res.status(500).send({"message":'Internal server error', error:error.message, result:false})
+     }
+})
 
 
 app.listen(PORT, async()=>{

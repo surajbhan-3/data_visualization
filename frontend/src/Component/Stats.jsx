@@ -1,8 +1,12 @@
 
 
-function Stats() {
+function Stats({saleData}) {
   return (
-    <div>Stats</div>
+    <div>
+      <div>{saleData.totalAmount}</div>
+      <div>{saleData.totalSoldItems}</div>
+      <div>{saleData.totalNotSoldItems}</div>
+    </div>
   )
 }
 

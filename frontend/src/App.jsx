@@ -1,7 +1,7 @@
 import './App.css'
+import Chart from './Component/Chart'
 import Navbar from './Component/Navbar'
 import Product from './Component/Product'
-import Stats from './Component/Stats'
 
 function App() {
 
@@ -10,7 +10,7 @@ function App() {
     <>
     <Navbar />
     <Product/>
-    <Stats />
+   
     </>
   )
 }
