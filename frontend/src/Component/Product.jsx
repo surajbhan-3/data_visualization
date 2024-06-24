@@ -88,7 +88,7 @@ function Product() {
             type="month" 
             name="selectMonth"
             id="selectMonth"
-            value="2024-03"
+            value={`2024-${selectedMonth}`}
             onChange={handleSelectedMonth} />
         </div>
       </div>
@@ -146,10 +146,13 @@ function Product() {
      
        <Stats 
        saleData ={saleData}
+       month = {selectedMonth}
        />
-       <Chart
+      <div className="div-wrapper">
+      <Chart
        month={selectedMonth}
        />
+      </div>
     
     </div>
   )
